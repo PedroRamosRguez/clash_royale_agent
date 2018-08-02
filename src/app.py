@@ -2,12 +2,45 @@
 # -*- coding: utf-8 -*-
 
 import os
+import bienvenida
+import despedida
 from flask import Flask
+from flask import request
+
 # Flask app should start in global layout
 app = Flask(__name__)
-@app.route('/')
-def hello_world():
-   return 'hola mundo'
+log = app.logger
+
+#objeto donde se añaden las acciones del agente
+actions = {
+    'bienvenida': bienvenida.action_bienvenida,
+    'despedida': despedida.action_despedida
+}
+
+@app.route('/status', methods=['GET'])
+def status():
+    """Comprobar el status del bot"""
+    return 'OK'
+
+@app.route('/static_reply', methods=['POST'])
+def static_reply():
+    """
+        Función que se carga para devolver la respuesta al usuario
+    """
+    global actions
+    req = request.get_json(silent=True, force=True)
+    try:
+        action = req['queryResult']['action']
+    except AttributeError:
+        return 'json error'
+    if action in actions:
+        functor = actions[action]
+        if functor.__doc__:
+            print(functor.__doc__.split('\n')[0])
+        respuesta = functor(req)
+    else:
+        log.error('no esta dentro de las actions')
+    return respuesta
 
 if __name__ == '__main__':
     port = int(os.getenv('PORT', 50000))

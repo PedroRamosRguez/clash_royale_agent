@@ -3,7 +3,9 @@
 
 import os
 import bienvenida
+import mazo_aleatorio
 import despedida
+
 from flask import Flask
 from flask import request
 
@@ -14,6 +16,7 @@ log = app.logger
 #objeto donde se añaden las acciones del agente
 actions = {
     'bienvenida': bienvenida.action_bienvenida,
+    'mazo_aleatorio': mazo_aleatorio.mazo_aleatorio,
     'despedida': despedida.action_despedida
 }
 

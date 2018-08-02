@@ -1,0 +1,4 @@
+syntax: glob
+*.pyc
+#packaages
+__pycache__

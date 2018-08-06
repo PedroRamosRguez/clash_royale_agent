@@ -17,6 +17,7 @@ log = app.logger
 actions = {
     'bienvenida': bienvenida.action_bienvenida,
     'mazo_aleatorio': mazo_aleatorio.mazo_aleatorio,
+    #'card_detalle': mazo_aleatorio.detalle_card,
     'despedida': despedida.action_despedida
 }
 

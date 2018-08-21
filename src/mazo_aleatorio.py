@@ -6,7 +6,22 @@ def get_mazo_aleatorio():
     url = 'http://www.clashapi.xyz/api/random-deck'
     respuesta = requests.get(url)
     datos = respuesta.json()
+    mazo = [x['idName'] for x in datos]
+    #print(mazo)
     return datos
+
+
+def get_mazo_espanol(mazo):
+    #print(mazo)
+    mazo_español = []
+    for i in mazo:
+        carta = i['idName']
+        url = 'http://localhost:50000/api/card/'+carta
+        respuesta = requests.get(url)
+        datos = respuesta.json()
+        #print(datos)
+    #print(mazo_español)
+
 
 #obtiene un listado de cartas del tipo carousel card.
 def get_listado_cartas(mazo):
@@ -40,14 +55,18 @@ def get_listado_cartas(mazo):
 
 def get_listado_cartas_2(mazo):
     listado_cartas, elixirCost, arena = [], [], []
+    #translator = Translator()
     #la traduccion de la descripcion dejarla pendiente...
     for i in mazo:
-        #descripcion = i['description']
-        #descripcion_traducida = translator.translate(descripcion, dest='es')
         elixirCost.append(i['elixirCost'])
         arena.append(i['arena'])
+        # descripcion = i['description'] if 'description' in i.keys() else ''
+        # descripcion_traducida = translator.translate(descripcion,dest='es')
+        # print(descripcion_traducida.text)
         listado_cartas.append({
-            'description':i['description'],
+            #foto_noticia = str(i[1].foto_ruta) if 'foto_ruta' in i[1] else 'http://parcan.es/static/art/logo.png'
+            
+            'description':i['description'] if 'description' in i.keys() else '',
             'image':{
                 'imageUri': 'http://www.clashapi.xyz/images/cards/'+str(i['idName'])+'.png',
                 'accessibilityText': str(i['idName'])
@@ -69,6 +88,7 @@ def mazo_aleatorio(req = None):
         Action que llama a la API para obtener un mazo aleatorio
     """
     mazo = get_mazo_aleatorio()
+    #get_mazo_espanol(mazo)
     listado_cartas = get_listado_cartas_2(mazo)
     print('ESTO ES EL LISTADO DE CARTAS...')
     coste_elixir = [i for i in listado_cartas['elixirCost']]

@@ -2,17 +2,18 @@
 # -*- coding: utf-8 -*-
 
 import os
+# import requests
 import bienvenida
 import mazo_aleatorio
 import despedida
-
+from api_cards_espanol import *
 from flask import Flask
 from flask import request
-
+from flask_restful import Api
 # Flask app should start in global layout
 app = Flask(__name__)
 log = app.logger
-
+app.register_blueprint(api_card_español)
 #objeto donde se añaden las acciones del agente
 actions = {
     'bienvenida': bienvenida.action_bienvenida,
@@ -33,6 +34,7 @@ def static_reply():
     """
     global actions
     req = request.get_json(silent=True, force=True)
+
     try:
         action = req['queryResult']['action']
     except AttributeError:
@@ -45,6 +47,8 @@ def static_reply():
     else:
         log.error('no esta dentro de las actions')
     return respuesta
+
+#importar modulo de la api
 
 if __name__ == '__main__':
     port = int(os.getenv('PORT', 50000))

@@ -1,5 +1,6 @@
 import requests
 import parsear_respuesta
+import random
 from googletrans import Translator
 
 def get_mazo_aleatorio():
@@ -7,21 +8,16 @@ def get_mazo_aleatorio():
     respuesta = requests.get(url)
     datos = respuesta.json()
     mazo = [x['idName'] for x in datos]
-    #print(mazo)
     return datos
 
 
-def get_mazo_espanol(mazo):
-    #print(mazo)
-    mazo_español = []
-    for i in mazo:
-        carta = i['idName']
-        url = 'http://localhost:50000/api/card/'+carta
-        respuesta = requests.get(url)
-        datos = respuesta.json()
-        #print(datos)
-    #print(mazo_español)
-
+def get_mazo_espanol():
+    url = 'http://localhost:50000/api/card/'
+    respuesta = requests.get(url)
+    datos = respuesta.json()
+    cartas_seleccionadas = random.sample(range(0,len(datos)), 8)
+    mazo_creado = [datos[i] for i in cartas_seleccionadas]
+    return mazo_creado
 
 #obtiene un listado de cartas del tipo carousel card.
 def get_listado_cartas(mazo):
@@ -34,6 +30,7 @@ def get_listado_cartas(mazo):
     for i in mazo:
         #descripcion = i['description']
         #descripcion_traducida = translator.translate(descripcion, dest='es')
+        print(i)
         elixirCost.append(i['elixirCost'])
         arena.append(i['arena'])
         listado_cartas.append({
@@ -88,7 +85,7 @@ def mazo_aleatorio(req = None):
         Action que llama a la API para obtener un mazo aleatorio
     """
     mazo = get_mazo_aleatorio()
-    #get_mazo_espanol(mazo)
+    #mazo = get_mazo_espanol()
     listado_cartas = get_listado_cartas_2(mazo)
     print('ESTO ES EL LISTADO DE CARTAS...')
     coste_elixir = [i for i in listado_cartas['elixirCost']]

@@ -19,40 +19,10 @@ def get_mazo_espanol():
     mazo_creado = [datos[i] for i in cartas_seleccionadas]
     return mazo_creado
 
-#obtiene un listado de cartas del tipo carousel card.
-def get_listado_cartas(mazo):
-    """"
-        Método para añadir al objeto del carousel de cards las cards obtenidas
-        del mazo aleatorio generado por la API
-    """
-    listado_cartas, elixirCost, arena = [], [], []
-    #la traduccion de la descripcion dejarla pendiente...
-    for i in mazo:
-        #descripcion = i['description']
-        #descripcion_traducida = translator.translate(descripcion, dest='es')
-        print(i)
-        elixirCost.append(i['elixirCost'])
-        arena.append(i['arena'])
-        listado_cartas.append({
-            'info': {
-                'key': i['idName'],
-                'synonyms': [
-                    i['name'],
-                ]
-            },
-            'title': i['name'],
-            'description': '',#i['description'],#str(descripcion_traducida.text),
-            'image': {
-                'imageUri': 'http://www.clashapi.xyz/images/cards/'+str(i['idName'])+'.png',
-                'accessibilityText': str(i['idName'])
-            },
-        })
-    return {'listado_cartas':listado_cartas, 'elixirCost':elixirCost, 'arena':arena }
-
 
 def get_listado_cartas_2(mazo):
     listado_cartas, elixirCost, arena = [], [], []
-    #translator = Translator()
+    translator = Translator()
     #la traduccion de la descripcion dejarla pendiente...
     for i in mazo:
         elixirCost.append(i['elixirCost'])
@@ -61,8 +31,6 @@ def get_listado_cartas_2(mazo):
         # descripcion_traducida = translator.translate(descripcion,dest='es')
         # print(descripcion_traducida.text)
         listado_cartas.append({
-            #foto_noticia = str(i[1].foto_ruta) if 'foto_ruta' in i[1] else 'http://parcan.es/static/art/logo.png'
-            
             'description':i['description'] if 'description' in i.keys() else '',
             'image':{
                 'imageUri': 'http://www.clashapi.xyz/images/cards/'+str(i['idName'])+'.png',
@@ -84,8 +52,8 @@ def mazo_aleatorio(req = None):
     """action de mazo aleatorio
         Action que llama a la API para obtener un mazo aleatorio
     """
-    mazo = get_mazo_aleatorio()
-    #mazo = get_mazo_espanol()
+    #mazo = get_mazo_aleatorio()
+    mazo = get_mazo_espanol()
     listado_cartas = get_listado_cartas_2(mazo)
     print('ESTO ES EL LISTADO DE CARTAS...')
     coste_elixir = [i for i in listado_cartas['elixirCost']]

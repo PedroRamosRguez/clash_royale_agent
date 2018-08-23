@@ -682,7 +682,7 @@ cards = [
      {  
         "idName":"giant-snowball",
         "rarity":"Común",
-        "name":"Puercos reales",
+        "name":"Bola de nieve gigante",
         "description":"¡Esta bola de nieve es inmensa! Cuando salió rodando por el Pico helado, no hubo como frenarla. Los enemigos recibirán un impacto y el frío les hará ir más lentos.",
         "elixirCost":2,
         "arena":8

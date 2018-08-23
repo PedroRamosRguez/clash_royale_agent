@@ -4,6 +4,7 @@ import random
 from googletrans import Translator
 
 def get_mazo_aleatorio():
+    #para usar https usar esta url: https://clashapi.now.sh/api/cards/
     url = 'http://www.clashapi.xyz/api/random-deck'
     respuesta = requests.get(url)
     datos = respuesta.json()

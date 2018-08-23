@@ -15,7 +15,7 @@ def get_mazo_espanol():
     url = 'http://localhost:50000/api/card/'
     respuesta = requests.get(url)
     datos = respuesta.json()
-    cartas_seleccionadas = random.sample(range(0,len(datos)), 8)
+    cartas_seleccionadas = random.sample(range(0, len(datos)), 8)
     mazo_creado = [datos[i] for i in cartas_seleccionadas]
     return mazo_creado
 
@@ -42,7 +42,7 @@ def get_listado_cartas_2(mazo):
                     i['name'],
                 ]
             },
-            'title': i['idName']
+            'title': i['name']
         })
     return {'listado_cartas':listado_cartas, 'elixirCost':elixirCost, 'arena':arena }
 

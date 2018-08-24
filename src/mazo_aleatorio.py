@@ -3,10 +3,8 @@ import parsear_respuesta
 import random
 import simpleCard
 
-from googletrans import Translator
-
+#variable global para guardar el mazo aleatorio creado y no perderlo hasta que se genere otro distinto
 mazo_aleatorio_creado = []
-
 
 def get_sugerencias():
     """
@@ -52,13 +50,9 @@ def get_listado_cartas_2(mazo):
         Función para crear la listSelect de dialogflow en la app y mostrar el mazo creado
     """
     listado_cartas, elixirCost, arena = [], [], []
-    #translator = Translator()
-    #la traduccion de la descripcion dejarla pendiente...
     for i in mazo:
         elixirCost.append(i['elixirCost'])
         arena.append(i['arena'])
-        # descripcion_traducida = translator.translate(descripcion,dest='es')
-        # print(descripcion_traducida.text)
         listado_cartas.append({
             'description':i['description'] if 'description' in i.keys() else '',
             'image':{
@@ -106,7 +100,7 @@ def set_card_selected(card_seleted):
 
 
 def detalle_card(req):
-    """
+    """action ver carta en detalle
         Función que activa la action de ver la carta de detalle y devuelve la respuesta al usuario
     """
     card_selected = req['originalDetectIntentRequest']['payload']['inputs']
@@ -154,12 +148,7 @@ def mazo_aleatorio(req = None):
                 }
             },
             {
-                # opcion 1 para mostrar los resultados del carousel cardº
                 'platform': 'ACTIONS_ON_GOOGLE',
-                # 'carouselSelect': {
-                #     'items': [i for i in listado_cartas['listado_cartas']]
-                # },
-                #opcion 2 para mostrar los resultados como una lista...
                 'listSelect': {
                     "title": "Mazo generado",
                     'items': [i for i in listado_cartas['listado_cartas']]

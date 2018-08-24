@@ -1,12 +1,2 @@
 Flask==1.0.2
 requests==2.18.4
-googletrans
-# ======================================================
-#   Paquetes para la creación de la api en español
-# ======================================================
-#paquete para integrar sqlalchemy en flask
-flask_sqlalchemy
-#paquete para la renderizacion de la response en formato json
-flask_marshmallow
-#paquete para inegrar ambos paquetes
-marshmallow-sqlalchemy

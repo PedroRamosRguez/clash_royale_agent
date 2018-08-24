@@ -4,7 +4,8 @@
 import parsear_respuesta
 
 def get_sugerencias():
-    """Metodo para obtener las sugerencias de la bienvenida al bot
+    """
+       Metodo para obtener las sugerencias de la bienvenida al bot
        Se añadió como método para que sea dinámico, es decir se puedan
        añadir o eliminar en caso de que se actualicen las actions creadas
        en el bot

@@ -18,7 +18,7 @@ app.register_blueprint(api_card_español)
 actions = {
     'bienvenida': bienvenida.action_bienvenida,
     'mazo_aleatorio': mazo_aleatorio.mazo_aleatorio,
-    #'card_detalle': mazo_aleatorio.detalle_card,
+    'card_detalle': mazo_aleatorio.detalle_card,
     'despedida': despedida.action_despedida
 }
 

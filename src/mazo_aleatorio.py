@@ -3,6 +3,27 @@ import parsear_respuesta
 import random
 from googletrans import Translator
 
+mazo_aleatorio_creado = []
+
+
+def get_sugerencias():
+    """
+        función para obtener las sugerencias y añadirlas a los botones de sugerencias del asistemte
+    """
+    sugerencias = [
+        {
+            'title': 'Generar mazo aleatorio',
+        },
+        {
+            'title': 'Volver a ver el mazo creado',
+        },
+        {
+            'title': 'Salir',
+        },
+    ]
+    return sugerencias
+
+
 def get_mazo_aleatorio():
     #para usar https usar esta url: https://clashapi.now.sh/api/cards/
     url = 'http://www.clashapi.xyz/api/random-deck'
@@ -13,6 +34,9 @@ def get_mazo_aleatorio():
 
 
 def get_mazo_espanol():
+    """
+        Función para obtener el mazo aleatorio llamando a la api creada.
+    """
     url = 'http://localhost:50000/api/card/'
     respuesta = requests.get(url)
     datos = respuesta.json()
@@ -22,8 +46,11 @@ def get_mazo_espanol():
 
 
 def get_listado_cartas_2(mazo):
+    """
+        Función para crear la listSelect de dialogflow en la app y mostrar el mazo creado
+    """
     listado_cartas, elixirCost, arena = [], [], []
-    translator = Translator()
+    #translator = Translator()
     #la traduccion de la descripcion dejarla pendiente...
     for i in mazo:
         elixirCost.append(i['elixirCost'])
@@ -48,6 +75,48 @@ def get_listado_cartas_2(mazo):
     return {'listado_cartas':listado_cartas, 'elixirCost':elixirCost, 'arena':arena }
 
 
+def get_carta_seleccionada(carta):
+    """
+        Funcion para obtener los detalles de la carta desde la api
+    """
+    url = 'http://localhost:50000/api/card/'+carta
+    respuesta = requests.get(url)
+    datos = respuesta.json()
+    return datos
+
+
+def set_card_selected(card_seleted):
+    """
+        Función para crear la card de dialogflow con la informacion detallada de la carta seleccionada del mazo aleatorio creado.
+    """
+    listado_sugerencias = get_sugerencias()
+    mensaje_voz = '''<speak>{} <break time = '800ms'/>
+    <prosody rate="default">
+    ¿Qué información desea escuchar?
+    <break time = '700ms'/>
+    {}</prosody></speak>
+    '''
+    # card_details = card.set_card_details(
+    #     mensaje_voz,
+    #     card_seleted,
+    #     listado_sugerencias
+    # )
+    return card_details
+
+
+def detalle_card(req):
+    """
+        Función que activa la action de ver la carta de detalle y devuelve la respuesta al usuario
+    """
+    print('entro en el detalle de la card y esta es la request')
+    #print(req)
+    print(mazo_aleatorio_creado)
+    card_selected = req['originalDetectIntentRequest']['payload']['inputs']
+    print(card_selected)
+    #result = set_card_selected(card_selected)
+    #detalles_carta = get_carta_seleccionada(carta_seleccionada[0]['arguments'][0]['textValue'])
+    #print(detalles_carta)
+
 
 def mazo_aleatorio(req = None):
     """action de mazo aleatorio
@@ -56,6 +125,9 @@ def mazo_aleatorio(req = None):
     #mazo = get_mazo_aleatorio()
     mazo = get_mazo_espanol()
     listado_cartas = get_listado_cartas_2(mazo)
+    #igualo las listas para la action del detalle y no perder el mazo creado
+    global mazo_aleatorio_creado
+    mazo_aleatorio_creado = listado_cartas
     print('ESTO ES EL LISTADO DE CARTAS...')
     coste_elixir = [i for i in listado_cartas['elixirCost']]
     arenas = [i for i in listado_cartas['arena']]

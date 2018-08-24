@@ -57,7 +57,6 @@ def get_listado_cartas_2(mazo):
     for i in mazo:
         elixirCost.append(i['elixirCost'])
         arena.append(i['arena'])
-        # descripcion = i['description'] if 'description' in i.keys() else ''
         # descripcion_traducida = translator.translate(descripcion,dest='es')
         # print(descripcion_traducida.text)
         listado_cartas.append({

@@ -11,11 +11,14 @@ def get_sugerencias():
     """
     sugerencias = [
         {
+            'title': 'Crear mazo aleatorio'
+        },
+        {
             'title': 'Información sobre cartas'
         },
         {
-            'title': 'Crear mazo aleatorio'
-        },
+            'title': 'Salir'
+        }
     ]
     return sugerencias
 

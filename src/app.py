@@ -19,6 +19,7 @@ actions = {
     'bienvenida': bienvenida.action_bienvenida,
     'mazo_aleatorio': mazo_aleatorio.mazo_aleatorio,
     'card_detalle': mazo_aleatorio.detalle_card,
+    'ver_mazo_creado': mazo_aleatorio.mazo_creado,
     'despedida': despedida.action_despedida
 }
 
@@ -34,7 +35,7 @@ def static_reply():
     """
     global actions
     req = request.get_json(silent=True, force=True)
-
+    print(req['queryResult']['languageCode'])
     try:
         action = req['queryResult']['action']
     except AttributeError:

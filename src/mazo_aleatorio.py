@@ -29,7 +29,7 @@ def get_mazo_aleatorio():
     url = 'http://www.clashapi.xyz/api/random-deck'
     respuesta = requests.get(url)
     datos = respuesta.json()
-    mazo = [x['idName'] for x in datos]
+    #mazo = [x['idName'] for x in datos]
     return datos
 
 
@@ -152,6 +152,45 @@ def mazo_aleatorio(req = None):
                 'listSelect': {
                     "title": "Mazo generado",
                     'items': [i for i in listado_cartas['listado_cartas']]
+                },
+
+            },
+        ],
+    }
+    respuesta = parsear_respuesta.parsear_respuesta(result)
+    return respuesta
+
+
+def mazo_creado(req=None):
+    coste_elixir = [i for i in mazo_aleatorio_creado['elixirCost']]
+    arenas = [i for i in mazo_aleatorio_creado['arena']]
+    media_coste_elixir = round(sum(coste_elixir)/ len(coste_elixir))
+    top_arena = max(arenas)
+    mensaje_voz = ''.join('''<speak><emphasis level='strong'>
+    este es el mazo resultante: <break time='500ms'/> <break time='500ms'/>''')
+    for i in mazo_aleatorio_creado['listado_cartas']:
+        mensaje_voz = mensaje_voz + '''{}<break time='500ms'/>'''.format(i['title'])
+    mensaje_voz = mensaje_voz + '''.Tiene una media de coste de elixir de {}
+    y es un mazo de arena {}</emphasis></speak>'''.format(media_coste_elixir, top_arena)
+    result = {
+        'fulfillmentText': 'este es el mazo resultante',
+        'fulfillmentMessages': [
+            {
+                'platform': 'ACTIONS_ON_GOOGLE',
+                'simpleResponses': {
+                    'simpleResponses': [
+                        {
+                            'textToSpeech': mensaje_voz,#'{}. Tiene una media de coste de elixir de {} y es un mazo de arena {}'.format(mensaje_voz,media_coste_elixir, top_arena),
+                            'displayText': 'Mazo resultante.\n Media de coste de elixir de {} .\n Mazo de arena {}'.format(media_coste_elixir, top_arena),
+                        }
+                    ]
+                }
+            },
+            {
+                'platform': 'ACTIONS_ON_GOOGLE',
+                'listSelect': {
+                    "title": "Mazo generado",
+                    'items': [i for i in mazo_aleatorio_creado['listado_cartas']]
                 },
 
             },

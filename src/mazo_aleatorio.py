@@ -1,6 +1,8 @@
 import requests
 import parsear_respuesta
 import random
+import simpleCard
+
 from googletrans import Translator
 
 mazo_aleatorio_creado = []
@@ -15,7 +17,7 @@ def get_sugerencias():
             'title': 'Generar mazo aleatorio',
         },
         {
-            'title': 'Volver a ver el mazo creado',
+            'title': 'Volver a mazo creado',
         },
         {
             'title': 'Salir',
@@ -96,11 +98,11 @@ def set_card_selected(card_seleted):
     <break time = '700ms'/>
     {}</prosody></speak>
     '''
-    # card_details = card.set_card_details(
-    #     mensaje_voz,
-    #     card_seleted,
-    #     listado_sugerencias
-    # )
+    card_details = simpleCard.set_card_details(
+        mensaje_voz,
+        card_seleted,
+        listado_sugerencias
+    )
     return card_details
 
 
@@ -108,14 +110,13 @@ def detalle_card(req):
     """
         Función que activa la action de ver la carta de detalle y devuelve la respuesta al usuario
     """
-    print('entro en el detalle de la card y esta es la request')
-    #print(req)
-    print(mazo_aleatorio_creado)
     card_selected = req['originalDetectIntentRequest']['payload']['inputs']
-    print(card_selected)
-    #result = set_card_selected(card_selected)
+    contenido_carta = get_carta_seleccionada(card_selected[0]['arguments'][0]['textValue'])
+    result = set_card_selected(contenido_carta)
     #detalles_carta = get_carta_seleccionada(carta_seleccionada[0]['arguments'][0]['textValue'])
     #print(detalles_carta)
+    response = parsear_respuesta.parsear_respuesta(result)
+    return response
 
 
 def mazo_aleatorio(req = None):

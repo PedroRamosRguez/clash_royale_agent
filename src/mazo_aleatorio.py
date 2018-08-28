@@ -1,10 +1,10 @@
 import requests
 import parsear_respuesta
 import random
-import simpleCard
+import simpleCard, ver_mazo_aleatorio_creado, sugerencias
 
 #variable global para guardar el mazo aleatorio creado y no perderlo hasta que se genere otro distinto
-mazo_aleatorio_creado = []
+random_created_deck = []
 
 def get_sugerencias():
     """
@@ -25,35 +25,41 @@ def get_sugerencias():
 
 
 def get_mazo_aleatorio():
+    """
+        Función que llama a la api para obtener el mazo aleatorio con la información en inglés.
+        Esta función se usa cuando el agente es cargado en idioma inglés o en países con habla
+        inglesa.
+    """
     #para usar https usar esta url: https://clashapi.now.sh/api/cards/
     url = 'http://www.clashapi.xyz/api/random-deck'
-    respuesta = requests.get(url)
-    datos = respuesta.json()
-    #mazo = [x['idName'] for x in datos]
-    return datos
+    response = requests.get(url)
+    data = response.json()
+    return data
 
 
-def get_mazo_espanol():
+def get_random_spanish_deck():
     """
-        Función para obtener el mazo aleatorio llamando a la api creada.
+        Función para obtener el mazo aleatorio con la información en español llamando a la
+        api creada.
     """
     url = 'http://localhost:50000/api/card/'
-    respuesta = requests.get(url)
-    datos = respuesta.json()
-    cartas_seleccionadas = random.sample(range(0, len(datos)), 8)
-    mazo_creado = [datos[i] for i in cartas_seleccionadas]
-    return mazo_creado
+    response = requests.get(url)
+    data = response.json()
+    selected_cards = random.sample(range(0, len(data)), 8)
+    deck_created = [data[i] for i in selected_cards]
+    return deck_created
 
 
-def get_listado_cartas(mazo):
+def get_card_list(deck):
     """
         Función para crear la listSelect de dialogflow en la app y mostrar el mazo creado
     """
-    listado_cartas, elixirCost, arena = [], [], []
-    for i in mazo:
+    #listado_cartas, elixirCost, arena = [], [], []
+    card_list, elixirCost, arena = [], [], []
+    for i in deck:
         elixirCost.append(i['elixirCost'])
         arena.append(i['arena'])
-        listado_cartas.append({
+        card_list.append({
             'description':i['description'] if 'description' in i.keys() else '',
             'image':{
                 'imageUri': 'http://www.clashapi.xyz/images/cards/'+str(i['idName'])+'.png',
@@ -67,72 +73,72 @@ def get_listado_cartas(mazo):
             },
             'title': i['name']
         })
-    return {'listado_cartas':listado_cartas, 'elixirCost':elixirCost, 'arena':arena }
+    return {'card_list':card_list, 'elixirCost':elixirCost, 'arena':arena }
 
 
-def get_carta_seleccionada(carta):
+def get_selected_card(card):
     """
         Funcion para obtener los detalles de la carta desde la api
     """
-    url = 'http://localhost:50000/api/card/'+carta
-    respuesta = requests.get(url)
-    datos = respuesta.json()
-    return datos
+    url = 'http://localhost:50000/api/card/'+card
+    response = requests.get(url)
+    data = response.json()
+    return data
 
 
-def set_card_selected(card_seleted):
+def set_card_selected(card_selected):
     """
         Función para crear la card de dialogflow con la informacion detallada de la carta seleccionada del mazo aleatorio creado.
     """
+    print(card_selected)
     listado_sugerencias = get_sugerencias()
-    mensaje_voz = '''<speak>{} <break time = '800ms'/>
+    speech_sugerencias = sugerencias.escuchar_sugerencias(listado_sugerencias)
+    mensaje_voz = '''<speak>{}<break time = '8000ms'/>{}<break time = '600ms'/>
+    Es una carta {} <break time = '600ms'/> y
+    tiene un coste de elixir de {}<break time = '800ms'/>
     <prosody rate="default">
     ¿Qué información desea escuchar?
     <break time = '700ms'/>
     {}</prosody></speak>
-    '''
+    '''.format(card_selected['name'], card_selected['description'], card_selected['rarity'], card_selected['elixirCost'], speech_sugerencias)
     card_details = simpleCard.set_card_details(
         mensaje_voz,
-        card_seleted,
+        card_selected,
         listado_sugerencias
     )
     return card_details
 
 
-def detalle_card(req):
+def card_detail(req):
     """action ver carta en detalle
         Función que activa la action de ver la carta de detalle y devuelve la respuesta al usuario
     """
     card_selected = req['originalDetectIntentRequest']['payload']['inputs']
-    contenido_carta = get_carta_seleccionada(card_selected[0]['arguments'][0]['textValue'])
-    result = set_card_selected(contenido_carta)
-    #detalles_carta = get_carta_seleccionada(carta_seleccionada[0]['arguments'][0]['textValue'])
-    #print(detalles_carta)
+    card_details = get_selected_card(card_selected[0]['arguments'][0]['textValue'])
+    result = set_card_selected(card_details)
     response = parsear_respuesta.parsear_respuesta(result)
     return response
 
 
-def mazo_aleatorio(req = None):
+def random_deck(req=None):
     """action de mazo aleatorio
         Action que llama a la API para obtener un mazo aleatorio
     """
-    #mazo = get_mazo_aleatorio()
-    mazo = get_mazo_espanol()
-    listado_cartas = get_listado_cartas(mazo)
+    deck = get_random_spanish_deck()
+    card_list = get_card_list(deck)
     #igualo las listas para la action del detalle y no perder el mazo creado
-    global mazo_aleatorio_creado
-    mazo_aleatorio_creado = listado_cartas
-    print('ESTO ES EL LISTADO DE CARTAS...')
-    coste_elixir = [i for i in listado_cartas['elixirCost']]
-    arenas = [i for i in listado_cartas['arena']]
-    media_coste_elixir = round(sum(coste_elixir)/ len(coste_elixir))
+    global random_created_deck
+    random_created_deck = card_list
+    elixir_cost = [i for i in card_list['elixirCost']]
+    arenas = [i for i in card_list['arena']]
+    average_elixir_cost = round(sum(elixir_cost)/ len(elixir_cost))
     top_arena = max(arenas)
-    mensaje_voz = ''.join('''<speak><emphasis level='strong'>
+    voice_message = ''.join('''<speak><emphasis level='strong'>
     este es el mazo resultante: <break time='500ms'/> <break time='500ms'/>''')
-    for i in listado_cartas['listado_cartas']:
-        mensaje_voz = mensaje_voz + '''{}<break time='500ms'/>'''.format(i['title'])
-    mensaje_voz = mensaje_voz + '''.Tiene una media de coste de elixir de {}
-    y es un mazo de arena {}</emphasis></speak>'''.format(media_coste_elixir, top_arena)
+    for i in card_list['card_list']:
+        voice_message = voice_message + '''{}<break time='500ms'/>'''.format(i['title'])
+    voice_message = voice_message + '''.Tiene una media de coste de elixir de {}
+    y es un mazo de arena {}</emphasis></speak>'''.format(average_elixir_cost, top_arena)
     result = {
         'fulfillmentText': 'este es el mazo resultante',
         'fulfillmentMessages': [
@@ -141,8 +147,8 @@ def mazo_aleatorio(req = None):
                 'simpleResponses': {
                     'simpleResponses': [
                         {
-                            'textToSpeech': mensaje_voz,#'{}. Tiene una media de coste de elixir de {} y es un mazo de arena {}'.format(mensaje_voz,media_coste_elixir, top_arena),
-                            'displayText': 'Mazo resultante.\n Media de coste de elixir de {} .\n Mazo de arena {}'.format(media_coste_elixir, top_arena),
+                            'textToSpeech': voice_message,
+                            'displayText': 'Mazo resultante.\n Media de coste de elixir de {} .\n Mazo de arena {}'.format(average_elixir_cost, top_arena),
                         }
                     ]
                 }
@@ -151,57 +157,24 @@ def mazo_aleatorio(req = None):
                 'platform': 'ACTIONS_ON_GOOGLE',
                 'listSelect': {
                     "title": "Mazo generado",
-                    'items': [i for i in listado_cartas['listado_cartas']]
+                    'items': [i for i in card_list['card_list']]
                 },
 
             },
         ],
     }
-    respuesta = parsear_respuesta.parsear_respuesta(result)
-    return respuesta
+    response = parsear_respuesta.parsear_respuesta(result)
+    return response
 
 
-def mazo_creado(req=None):
+def deck_created(req=None):
     """action ver_mazo_creado
-        Action que permite ver el mazo creado por la api
+        Action que permite ver el mazo creado por la api. Se controla la respuesta en caso de que se haya creado o no.
     """
-    if mazo_aleatorio_creado:
-        coste_elixir = [i for i in mazo_aleatorio_creado['elixirCost']]
-        arenas = [i for i in mazo_aleatorio_creado['arena']]
-        media_coste_elixir = round(sum(coste_elixir)/ len(coste_elixir))
-        top_arena = max(arenas)
-        mensaje_voz = ''.join('''<speak><emphasis level='strong'>
-        este es el mazo resultante: <break time='500ms'/> <break time='500ms'/>''')
-        for i in mazo_aleatorio_creado['listado_cartas']:
-            mensaje_voz = mensaje_voz + '''{}<break time='500ms'/>'''.format(i['title'])
-        mensaje_voz = mensaje_voz + '''.Tiene una media de coste de elixir de {}
-        y es un mazo de arena {}</emphasis></speak>'''.format(media_coste_elixir, top_arena)
-        result = {
-            'fulfillmentText': 'este es el mazo resultante',
-            'fulfillmentMessages': [
-                {
-                    'platform': 'ACTIONS_ON_GOOGLE',
-                    'simpleResponses': {
-                        'simpleResponses': [
-                            {
-                                'textToSpeech': mensaje_voz,#'{}. Tiene una media de coste de elixir de {} y es un mazo de arena {}'.format(mensaje_voz,media_coste_elixir, top_arena),
-                                'displayText': 'Mazo resultante.\n Media de coste de elixir de {} .\n Mazo de arena {}'.format(media_coste_elixir, top_arena),
-                            }
-                        ]
-                    }
-                },
-                {
-                    'platform': 'ACTIONS_ON_GOOGLE',
-                    'listSelect': {
-                        "title": "Mazo generado",
-                        'items': [i for i in mazo_aleatorio_creado['listado_cartas']]
-                    },
-
-                },
-            ],
-        }
+    if random_created_deck:
+        result = ver_mazo_aleatorio_creado.show_created_deck(random_created_deck)
     else:
-        result={
+        result = {
             'fulfillmentMessages': [
                 {
                     'platform': 'ACTIONS_ON_GOOGLE',
@@ -222,5 +195,5 @@ def mazo_creado(req=None):
                 }, 
             ]
         }
-    respuesta = parsear_respuesta.parsear_respuesta(result)
-    return respuesta
+    response = parsear_respuesta.parsear_respuesta(result)
+    return response

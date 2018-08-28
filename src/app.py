@@ -17,9 +17,9 @@ app.register_blueprint(api_card_español)
 #objeto donde se añaden las acciones del agente
 actions = {
     'bienvenida': bienvenida.action_bienvenida,
-    'mazo_aleatorio': mazo_aleatorio.mazo_aleatorio,
-    'card_detalle': mazo_aleatorio.detalle_card,
-    'ver_mazo_creado': mazo_aleatorio.mazo_creado,
+    'mazo_aleatorio': mazo_aleatorio.random_deck,
+    'card_detalle': mazo_aleatorio.card_detail,
+    'ver_mazo_creado': mazo_aleatorio.deck_created,
     'despedida': despedida.action_despedida
 }
 

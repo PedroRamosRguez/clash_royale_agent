@@ -2,10 +2,11 @@
 # -*- coding: utf-8 -*-
 
 import os
-# import requests
 import bienvenida
-import mazo_aleatorio
 import despedida
+import info_cartas
+import mazo_aleatorio
+
 from api_cards_espanol import *
 from flask import Flask
 from flask import request
@@ -17,10 +18,12 @@ app.register_blueprint(api_card_español)
 #objeto donde se añaden las acciones del agente
 actions = {
     'bienvenida': bienvenida.action_bienvenida,
-    'mazo_aleatorio': mazo_aleatorio.random_deck,
     'card_detalle': mazo_aleatorio.card_detail,
+    'despedida': despedida.action_despedida,
+    'info_carta':info_cartas.info_cartas,
+    'mazo_aleatorio': mazo_aleatorio.random_deck,
     'ver_mazo_creado': mazo_aleatorio.deck_created,
-    'despedida': despedida.action_despedida
+    
 }
 
 @app.route('/status', methods=['GET'])

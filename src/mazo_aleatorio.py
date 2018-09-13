@@ -90,19 +90,23 @@ def set_card_selected(card_selected):
     """
         Función para crear la card de dialogflow con la informacion detallada de la carta seleccionada del mazo aleatorio creado.
     """
-    print(card_selected)
     listado_sugerencias = get_sugerencias()
     speech_sugerencias = sugerencias.escuchar_sugerencias(listado_sugerencias)
-    mensaje_voz = '''<speak>{}<break time = '8000ms'/>{}<break time = '600ms'/>
-    Es una carta {} <break time = '600ms'/> y
+    mensaje_voz = '''<speak><emphasis level='strong'>Esta es la información correspondiente a la carta {}<break time = '800ms'/>
+    {}<break time = '600ms'/>
+    Es una carta {}<break time = '600ms'/> y
     tiene un coste de elixir de {}<break time = '800ms'/>
     <prosody rate="default">
     ¿Qué información desea escuchar?
     <break time = '700ms'/>
-    {}</prosody></speak>
+    {}</prosody></emphasis></speak>
     '''.format(card_selected['name'], card_selected['description'], card_selected['rarity'], card_selected['elixirCost'], speech_sugerencias)
+    mensaje_card = '''Esta es la información correspondiente a la carta {}
+    {}.\n Es una carta {} y tiene un coste de elixir de {}
+    '''.format(card_selected['name'], card_selected['description'], card_selected['rarity'], card_selected['elixirCost'])
     card_details = simpleCard.set_card_details(
         mensaje_voz,
+        mensaje_card,
         card_selected,
         listado_sugerencias
     )
@@ -136,8 +140,8 @@ def random_deck(req=None):
     voice_message = ''.join('''<speak><emphasis level='strong'>
     este es el mazo resultante: <break time='500ms'/> <break time='500ms'/>''')
     for i in card_list['card_list']:
-        voice_message = voice_message + '''{}<break time='500ms'/>'''.format(i['title'])
-    voice_message = voice_message + '''.Tiene una media de coste de elixir de {}
+        voice_message = voice_message + '''{}. <break time='800ms'/>'''.format(i['title'])
+    voice_message = voice_message + '''.Tiene un coste medio de elixir de {}
     y es un mazo de arena {}</emphasis></speak>'''.format(average_elixir_cost, top_arena)
     result = {
         'fulfillmentText': 'este es el mazo resultante',

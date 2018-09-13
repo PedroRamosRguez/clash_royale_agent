@@ -314,7 +314,7 @@ cards = [
      {  
         "idName":"fire-spirits",
         "rarity":"Común",
-        "name":"Espirítus de fuego",
+        "name":"Espíritus de fuego",
         "description":"Estos tres espíritus de fuego tienen una misión suicida:darte un abrazo calentito. Sería adorable... si no estuvieran en llamas.",
         "elixirCost":2,
         "arena":5

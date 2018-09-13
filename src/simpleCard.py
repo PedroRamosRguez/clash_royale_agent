@@ -1,4 +1,4 @@
-def set_card_details(mensaje_voz, card, listado_sugerencias):
+def set_card_details(mensaje_voz, mensaje_card, card, listado_sugerencias):
     card_picture = 'http://www.clashapi.xyz/images/cards/'+str(card['idName'])+'.png',
     simple_card = {
         "fulfillmentMessages": [

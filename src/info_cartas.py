@@ -43,27 +43,45 @@ def info_cartas(req):
         Funcion que es llamada cuando se activa la action de informacion sobre cartas.
     """
     print('esta es la action de la informacion de las cartas')
-    carta = req['queryResult']['parameters']['Cartas'] or req['queryResult']['outputContexts'][0]['parameters']['Cartas.original']
-    print(carta)
-    info_carta = get_selected_card(carta)
-    if 'error' in info_carta:
-        resultado = {
-           'fulfillmentMessages': [
-                {
-                    'platform': 'ACTIONS_ON_GOOGLE',
-                    'simpleResponses': {
-                        'simpleResponses': [
-                            {
-                                'textToSpeech': 'No existe información sobre la carta {}'.format(carta),
-                                'displayText': 'No existe información sobre la carta {}'.format(carta),
-                            }
-                        ]
-                    }
-                }, 
-            ] 
-        }
-        respuesta = parsear_respuesta.parsear_respuesta(resultado)
+    if req['queryResult']['parameters']['Cartas'] or req['queryResult']['outputContexts'][0]['parameters']['Cartas.original']:
+        carta = req['queryResult']['outputContexts'][0]['parameters']['Cartas.original']
+        print(carta)
+        info_carta = get_selected_card(carta)
+        if 'error' in info_carta:
+            resultado = {
+            'fulfillmentMessages': [
+                    {
+                        'platform': 'ACTIONS_ON_GOOGLE',
+                        'simpleResponses': {
+                            'simpleResponses': [
+                                {
+                                    'textToSpeech': 'No existe información sobre la carta {}'.format(carta),
+                                    'displayText': 'No existe información sobre la carta {}'.format(carta),
+                                }
+                            ]
+                        }
+                    }, 
+                ] 
+            }
+            respuesta = parsear_respuesta.parsear_respuesta(resultado)
+        else:
+            resultado = set_card_selected(info_carta)
+            respuesta = parsear_respuesta.parsear_respuesta(resultado)
     else:
-        resultado = set_card_selected(info_carta)
-        respuesta = parsear_respuesta.parsear_respuesta(resultado)
+        resultado = {
+        'fulfillmentMessages': [
+            {
+                'platform': 'ACTIONS_ON_GOOGLE',
+                'simpleResponses': {
+                    'simpleResponses': [
+                        {
+                            'textToSpeech': '¿ Diga el nombre de la carta que quiere la información?',
+                            "displayText": '¿ Diga el nombre de la carta que quiere la información?',
+                        }
+                    ]
+                }
+            },
+        ],
+    }
+    respuesta = parsear_respuesta.parsear_respuesta(resultado)
     return respuesta

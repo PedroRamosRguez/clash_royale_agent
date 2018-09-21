@@ -44,8 +44,8 @@ def info_cartas(req):
     """
     print('esta es la action de la informacion de las cartas')
     if req['queryResult']['parameters']['Cartas'] or req['queryResult']['outputContexts'][0]['parameters']['Cartas.original']:
-        carta = req['queryResult']['outputContexts'][0]['parameters']['Cartas.original']
-        print(carta)
+        carta = req['queryResult']['parameters']['Cartas'] or req['queryResult']['outputContexts'][0]['parameters']['Cartas.original']
+        print('esta es la carta:-->{}'.format(carta))
         info_carta = get_selected_card(carta)
         if 'error' in info_carta:
             resultado = {

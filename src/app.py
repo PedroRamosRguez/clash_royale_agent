@@ -14,7 +14,7 @@ from flask_restful import Api
 # Flask app should start in global layout
 app = Flask(__name__)
 log = app.logger
-app.register_blueprint(api_card_español)
+app.register_blueprint(api_card_espaniol)
 #objeto donde se añaden las acciones del agente
 actions = {
     'bienvenida': bienvenida.action_bienvenida,
